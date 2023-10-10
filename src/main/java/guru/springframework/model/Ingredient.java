@@ -21,6 +21,17 @@ public class Ingredient {
     // Here is the unidirectional relationship to Ingredient
     private UnitOfMeasure uom;
 
+    public Ingredient() {
+    }
+
+    // Added a helper constructor for this one so I can take in ingredient
+    public Ingredient(String description, BigDecimal amount, UnitOfMeasure uom, Recipe recipe) {
+        this.description = description;
+        this.amount = amount;
+        this.uom = uom;
+        this.recipe = recipe;
+    }
+
     public Long getId() {
         return Id;
     }

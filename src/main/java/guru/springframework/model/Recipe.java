@@ -1,6 +1,7 @@
 package guru.springframework.model;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -23,7 +24,7 @@ public class Recipe {
     //private Difficulty difficulty;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe")
-    private Set<Ingredient> ingredients; // From recipe to ingredient one of a two way relationship
+    private Set<Ingredient> ingredients = new HashSet<>(); // From recipe to ingredient one of a two way relationship also initializing to a new hashset to avoid a NPE
 
     @Lob // Large object field - Binary object field
     private Byte[] image;
@@ -38,7 +39,7 @@ public class Recipe {
     @ManyToMany
     @JoinTable(name = "recipe_category",
       joinColumns = @JoinColumn(name ="recipe_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private Set<Category> categories;
+    private Set<Category> categories = new HashSet<>();  // Same as above initializing to avoid a NPE ( little trick just in case you forget to set it.
 
     public Long getId() {
         return id;
