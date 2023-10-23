@@ -4,17 +4,18 @@ import guru.springframework.model.*;
 import guru.springframework.repository.CategoryRepository;
 import guru.springframework.repository.RecipeRepository;
 import guru.springframework.repository.UnitOfMeasureRepository;
-import guru.springframework.services.IngredientService;
-import guru.springframework.services.RecipeService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Component
 public class RecipeBootstrap implements ApplicationListener <ContextRefreshedEvent> {
 
@@ -30,8 +31,10 @@ public class RecipeBootstrap implements ApplicationListener <ContextRefreshedEve
 
 
     @Override
+    @Transactional
     public void onApplicationEvent(ContextRefreshedEvent event) {
         recipeRepository.saveAll(getRecipes());
+        log.debug("Loading Bootstrap data");
 
     }
 
@@ -80,6 +83,8 @@ public class RecipeBootstrap implements ApplicationListener <ContextRefreshedEve
             throw new RuntimeException("Expected UOM Not Found - pint");
         }
 
+        log.debug("Passed all Runtime exception for UoM");
+
         UnitOfMeasure eachUom = tablespoonUomOptional.get();
         UnitOfMeasure tableSpoonUoM = tablespoonUomOptional.get();
         UnitOfMeasure teaSpoonUoM = tablespoonUomOptional.get();
@@ -87,6 +92,8 @@ public class RecipeBootstrap implements ApplicationListener <ContextRefreshedEve
         UnitOfMeasure pinchUoM = tablespoonUomOptional.get();
         UnitOfMeasure ounceUoM = tablespoonUomOptional.get();
         UnitOfMeasure pintUoM = tablespoonUomOptional.get();
+
+        log.debug("Assigned all UoM to an Object");
 
         //get Categories
         Optional<Category> americanCategoryOptional = categoryRepository.findByDescription("American");
@@ -100,6 +107,8 @@ public class RecipeBootstrap implements ApplicationListener <ContextRefreshedEve
         if(!mexicanCategoryOptional.isPresent()){
             throw new RuntimeException("Expected Category Not Found");
         }
+
+        log.debug("Categories are all present");
 
         Category americaCatagory = americanCategoryOptional.get();
         Category mexicanCatagory =mexicanCategoryOptional.get();
@@ -116,17 +125,19 @@ public class RecipeBootstrap implements ApplicationListener <ContextRefreshedEve
 
         Notes burgerNotes = new Notes();
         burgerNotes.setRecipeNotes(" For a quick burger, cook beef patty as above and just add cheese, mustard and mayo and ready to serve");
-        burgerNotes.setRecipe(burgerRecipe);
         burgerRecipe.setNotes(burgerNotes);
 
-        burgerRecipe.getIngredients().add(new Ingredient("fresh onion", new BigDecimal(.1), pinchUoM, burgerRecipe));
-        burgerRecipe.getIngredients().add(new Ingredient("lettuces ", new BigDecimal(.1), eachUom, burgerRecipe));
-        burgerRecipe.getIngredients().add(new Ingredient("tomato ", new BigDecimal(.25), eachUom, burgerRecipe));
-        burgerRecipe.getIngredients().add(new Ingredient("beef patty ", new BigDecimal(.25), teaSpoonUoM, burgerRecipe));
-        burgerRecipe.getIngredients().add(new Ingredient("Mayo ", new BigDecimal(.05), teaSpoonUoM, burgerRecipe));
+        // This was very redundant needed to add helper method.
+        burgerRecipe.addIngredient(new Ingredient("fresh onion", new BigDecimal(.1), pinchUoM));
+        burgerRecipe.addIngredient(new Ingredient("lettuces ", new BigDecimal(.1), eachUom));
+        burgerRecipe.addIngredient(new Ingredient("tomato ", new BigDecimal(.25), eachUom));
+        burgerRecipe.addIngredient(new Ingredient("beef patty ", new BigDecimal(.25), teaSpoonUoM));
+        burgerRecipe.addIngredient(new Ingredient("Mayo ", new BigDecimal(.05), teaSpoonUoM));
 
         burgerRecipe.getCategories().add(americaCatagory);
 
+
+        log.debug("Adding to the recipes object");
         recipes.add(burgerRecipe);
 
         return recipes;
