@@ -49,8 +49,8 @@ public class RecipeServiceImpl implements RecipeService {
         Optional<Recipe> recipeOptional = recipeRepository.findById(l);
 
         if (!recipeOptional.isPresent()) {
-            //throw new RuntimeException("Recipe Not Found!");
-            throw new NotFoundException("Recipe Not Found");
+
+            throw new NotFoundException("Recipe Not Found. Found ID value:" + l.toString());
 
         }
 
@@ -60,6 +60,7 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     @Transactional
     public RecipeCommand findCommandById(Long l) {
+
         return recipeToRecipeCommand.convert(findById(l));
     }
 
