@@ -35,7 +35,6 @@ jobs:
           name: Upload coverage to Codecov
           command: bash <(curl -s https://codecov.io/bash)
 
-
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
