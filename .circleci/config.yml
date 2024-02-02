@@ -26,7 +26,14 @@ jobs:
       # Then run your tests!
       - run:
           name: Test
-          command: mvn test
+          command: mvn test cobertura:cobertura
+
+      - store_artifacts:
+          path: target/surefire-reports
+
+      - run:
+          name: Upload coverage to Codecov
+          command: bash <(curl -s https://codecov.io/bash)
 
 
 # Invoke jobs via workflows
